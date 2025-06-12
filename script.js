@@ -95,9 +95,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const scaledHeight = canvas.height / scale;
 
         ctx.fillStyle = 'white';
-        ctx.font = `bold ${scaledWidth / 4}px 'Dancing Script', cursive`; // Aumentado de 6 para 4 para uma fonte ainda maior
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
+
+        // Lógica para ajustar o tamanho da fonte e garantir que o texto não seja cortado
+        let fontSize = scaledWidth / 4; // Começa com o tamanho grande desejado
+        ctx.font = `bold ${fontSize}px 'Dancing Script', cursive`;
+        
+        // Diminui a fonte até que o texto caiba na tela com uma margem de 90%
+        while (ctx.measureText('Eu te amo').width > scaledWidth * 0.9) {
+            fontSize--;
+            ctx.font = `bold ${fontSize}px 'Dancing Script', cursive`;
+        }
+
         ctx.fillText('Eu te amo', scaledWidth / 2, scaledHeight / 2);
 
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
