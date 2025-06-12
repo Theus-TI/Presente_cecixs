@@ -7,7 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const couplePhoto = document.getElementById('couple-photo');
     const nextPhotoBtn = document.getElementById('next-photo-btn');
     const heartTriggerBtn = document.getElementById('heart-trigger-btn');
-    const timeContainer = document.getElementById('time-together');
+    const timeContainer = document.getElementById('time-together-container');
+    const cuteGif = document.getElementById('cute-gif');
 
     // --- ESTADO E CONFIGURAÇÕES ---
     const photos = [
@@ -33,19 +34,19 @@ document.addEventListener('DOMContentLoaded', () => {
      * Inicia a sequência ao clicar no envelope.
      */
     function openEnvelope() {
-                if (envelope.classList.contains('open')) return;
+        if (envelope.classList.contains('open')) return;
 
         envelope.classList.add('open');
 
-        // A animação agora é controlada puramente pelo CSS.
-        // O script apenas espera a animação do envelope terminar para continuar.
+        // Espera a animação de abertura do envelope terminar
         setTimeout(() => {
+            envelope.classList.add('hidden'); // Esconde o envelope de vez
             showLoveAnimation();
-        }, 2500); // Tempo para a animação do envelope + carta
+        }, 2000); // Tempo ajustado para a animação do CSS
     }
 
     /**
-     * Mostra a nova animação de "Eu te amo".
+     * Mostra a animação de "Eu te amo".
      */
     function showLoveAnimation() {
         loveMessageContainer.classList.remove('hidden');
@@ -59,17 +60,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Exibe a galeria de fotos e os botões de interação.
+     * Exibe a galeria de fotos e todos os elementos associados.
      */
     function showPhotoGallery() {
         photoContainer.classList.remove('hidden');
-        heartTriggerBtn.classList.remove('hidden');
-        displayNextPhoto(); // Mostra a primeira foto
+        timeContainer.classList.remove('hidden');
+        cuteGif.classList.remove('hidden');
         nextPhotoBtn.classList.remove('hidden');
+        heartTriggerBtn.classList.remove('hidden');
+
+        displayNextPhoto(); // Mostra a primeira foto
     }
 
     /**
-     * Exibe a próxima foto na galeria.
+     * Exibe a próxima foto na galeria com transição.
      */
     function displayNextPhoto() {
         couplePhoto.style.opacity = '0';
