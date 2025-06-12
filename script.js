@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- ELEMENTOS DO DOM ---
-    const envelope = document.querySelector('.envelope-wrapper');
-    const letter = document.querySelector('.letter');
+        const envelope = document.getElementById('envelope-container');
+        const letter = document.querySelector('.letter-card');
     const loveMessageContainer = document.getElementById('love-message-container');
     const loveMessage = document.getElementById('love-message');
     const photoContainer = document.getElementById('photo-container');
@@ -34,19 +34,15 @@ document.addEventListener('DOMContentLoaded', () => {
      * Inicia a sequência ao clicar no envelope.
      */
     function openEnvelope() {
-        if (envelope.classList.contains('opened')) return;
+                if (envelope.classList.contains('open')) return;
 
-        envelope.classList.add('opened');
+        envelope.classList.add('open');
 
+        // A animação agora é controlada puramente pelo CSS.
+        // O script apenas espera a animação do envelope terminar para continuar.
         setTimeout(() => {
-            letter.style.transform = 'translateY(-150px)';
-        }, 500);
-
-        setTimeout(() => {
-            envelope.style.opacity = '0';
-            envelope.style.pointerEvents = 'none';
             showLoveAnimation();
-        }, 1500);
+        }, 2500); // Tempo para a animação do envelope + carta
     }
 
     /**
