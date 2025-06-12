@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.textBaseline = 'middle';
 
         // Lógica para ajustar o tamanho da fonte e garantir que o texto não seja cortado
-        let fontSize = scaledWidth / 4; // Começa com o tamanho grande desejado
+        let fontSize = scaledWidth / 4.5; // Tamanho inicial mais seguro para mobile
         ctx.font = `bold ${fontSize}px 'Dancing Script', cursive`;
         
         // Diminui a fonte até que o texto caiba na tela com uma margem de 90%
@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         particles = [];
-        const density = 3 * scale;
+        const density = 5 * scale; // Densidade de partículas reduzida para melhor performance
         for (let y = 0; y < imageData.height; y += density) {
             for (let x = 0; x < imageData.width; x += density) {
                 if (imageData.data[(y * imageData.width + x) * 4 + 3] > 128) {
@@ -145,28 +145,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     envelopeContainer.addEventListener('click', () => {
-        const debugInfo = document.getElementById('debug-info');
         // Pede permissão para eventos de movimento em dispositivos iOS 13+
         if (typeof DeviceMotionEvent.requestPermission === 'function') {
-            debugInfo.innerHTML = 'Requesting permission...';
-            debugInfo.style.display = 'block';
             DeviceMotionEvent.requestPermission()
                 .then(permissionState => {
                     if (permissionState === 'granted') {
-                        debugInfo.innerHTML = 'Permission granted! Listening...';
                         window.addEventListener('devicemotion', handleMotion);
-                    } else {
-                        debugInfo.innerHTML = 'Permission denied.';
                     }
                 })
-                .catch(error => {
-                    debugInfo.innerHTML = `Error: ${error.message}`;
-                    console.error(error);
-                });
+                .catch(console.error);
         } else {
             // Lida com dispositivos não-iOS 13+ ou navegadores que não exigem permissão
-            debugInfo.innerHTML = 'Listening for motion...';
-            debugInfo.style.display = 'block';
             window.addEventListener('devicemotion', handleMotion);
         }
 
@@ -223,37 +212,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- Funcionalidade de Sacudir para Lançar Corações ---
 let lastShakeTime = 0;
-const shakeThreshold = 18; // Sensibilidade do movimento (menor = mais sensível)
+const shakeThreshold = 15; // Sensibilidade aumentada para facilitar a ativação
 
 function handleMotion(event) {
-    const debugInfo = document.getElementById('debug-info');
     // Só executa a lógica depois que a galeria de fotos estiver visível
     if (document.querySelector('.photo-container').classList.contains('hidden')) {
-        debugInfo.innerHTML = 'Waiting for gallery...';
         return;
     }
 
     const currentTime = new Date().getTime();
     // Evita que a função seja chamada muitas vezes seguidas
-    if ((currentTime - lastShakeTime) > 100) { // Delay reduzido para feedback mais rápido
+    if ((currentTime - lastShakeTime) > 500) {
         const acceleration = event.accelerationIncludingGravity;
         if (!acceleration || acceleration.x === null) {
-            debugInfo.innerHTML = 'No acceleration data.';
-            return; 
+            return; // Se não houver dados de aceleração, não faz nada
         }
         const x = acceleration.x;
         const y = acceleration.y;
         const z = acceleration.z;
 
         const magnitude = Math.sqrt(x * x + y * y + z * z);
-
-        debugInfo.innerHTML = `
-            X: ${x.toFixed(2)}<br>
-            Y: ${y.toFixed(2)}<br>
-            Z: ${z.toFixed(2)}<br>
-            Magnitude: <strong>${magnitude.toFixed(2)}</strong><br>
-            Threshold: ${shakeThreshold}
-        `;
 
         if (magnitude > shakeThreshold) {
             lastShakeTime = currentTime;
