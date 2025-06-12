@@ -7,7 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const couplePhoto = document.getElementById('couple-photo');
     const nextPhotoBtn = document.getElementById('next-photo-btn');
     const heartTriggerBtn = document.getElementById('heart-trigger-btn');
-    const timeContainer = document.getElementById('time-together-container');
+        const timeContainer = document.getElementById('time-together-container');
+    const timeText = document.getElementById('time-together');
     const cuteGif = document.getElementById('cute-gif');
 
     // --- ESTADO E CONFIGURAÇÕES ---
@@ -96,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const minutes = Math.floor((diff / 1000 / 60) % 60);
         const seconds = Math.floor((diff / 1000) % 60);
 
-        timeContainer.innerHTML = 
+                timeText.innerHTML = 
             `<span>${days}d</span> <span>${hours}h</span> <span>${minutes}m</span> <span>${seconds}s</span>`;
     }
 
