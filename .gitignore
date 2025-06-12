@@ -1,0 +1,5 @@
+# Ignorar arquivos de sistema operacional e de IDEs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

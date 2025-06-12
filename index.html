@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uma Surpresa para Meu Amor</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Envelope -->
+        <div id="envelope-container" class="envelope-container">
+            <div class="envelope">
+                <div class="letter-card">
+                    <p>Para meu amor ❤️</p>
+                </div>
+                <div class="envelope-flap"></div>
+                <div class="envelope-body"></div>
+            </div>
+        </div>
+
+        <!-- Hearts -->
+        <div id="hearts-container"></div>
+
+        <!-- Love Message -->
+        <div id="love-message-container" class="hidden">
+            <canvas id="text-canvas"></canvas>
+        </div>
+
+        <!-- Photo Gallery -->
+        <div id="photo-container" class="hidden">
+            <img id="couple-photo" src="" alt="Foto do casal">
+            <button id="change-photo-button">Próxima Memória</button>
+        </div>
+
+        <!-- Time Together -->
+        <div id="time-together-container" class="hidden">
+            <p id="time-together"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <img id="cute-gif" src="/gifs/cute.gif" alt="Cute pixel art gif">
+</body>
+</html>
