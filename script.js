@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- ELEMENTOS DO DOM ---
-        const envelope = document.getElementById('envelope-container');
-        const letter = document.querySelector('.letter-card');
+    const envelope = document.getElementById('envelope-container');
     const loveMessageContainer = document.getElementById('love-message-container');
     const loveMessage = document.getElementById('love-message');
     const photoContainer = document.getElementById('photo-container');
