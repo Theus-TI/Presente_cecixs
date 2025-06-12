@@ -146,28 +146,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     envelopeContainer.addEventListener('click', () => {
         const debugInfo = document.getElementById('debug-info');
-        // Pede permissão para eventos de movimento em dispositivos iOS 13+
-        if (typeof DeviceMotionEvent.requestPermission === 'function') {
-            debugInfo.innerHTML = 'Requesting permission...';
-            debugInfo.style.display = 'block';
-            DeviceMotionEvent.requestPermission()
-                .then(permissionState => {
-                    if (permissionState === 'granted') {
-                        debugInfo.innerHTML = 'Permission granted! Listening...';
-                        window.addEventListener('devicemotion', handleMotion);
-                    } else {
-                        debugInfo.innerHTML = 'Permission denied.';
-                    }
-                })
-                .catch(error => {
-                    debugInfo.innerHTML = `Error: ${error.message}`;
-                    console.error(error);
-                });
+        debugInfo.style.display = 'block';
+
+        if (window.DeviceMotionEvent) {
+            debugInfo.innerHTML = 'API de Movimento suportada.<br>';
+
+            // Pede permissão para eventos de movimento em dispositivos iOS 13+
+            if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                debugInfo.innerHTML += 'Requisitando permissão (iOS)...';
+                DeviceMotionEvent.requestPermission()
+                    .then(permissionState => {
+                        if (permissionState === 'granted') {
+                            debugInfo.innerHTML = 'Permissão concedida! Ouvindo...';
+                            window.addEventListener('devicemotion', handleMotion);
+                        } else {
+                            debugInfo.innerHTML = 'Permissão negada.';
+                        }
+                    })
+                    .catch(error => {
+                        debugInfo.innerHTML = `Erro na permissão: ${error.message}`;
+                        console.error(error);
+                    });
+            } else {
+                // Lida com dispositivos não-iOS 13+ (Android, etc.)
+                debugInfo.innerHTML += 'Ouvindo movimentos (Android/Outros)...';
+                window.addEventListener('devicemotion', handleMotion);
+            }
         } else {
-            // Lida com dispositivos não-iOS 13+ ou navegadores que não exigem permissão
-            debugInfo.innerHTML = 'Listening for motion...';
-            debugInfo.style.display = 'block';
-            window.addEventListener('devicemotion', handleMotion);
+            debugInfo.innerHTML = 'API de Movimento NÃO é suportada neste navegador/dispositivo.';
         }
 
         // 1. Abre o envelope e a carta desliza para fora.
