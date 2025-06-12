@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- ELEMENTOS --- //
     const envelopeContainer = document.getElementById('envelope-container');
     const loveMessageContainer = document.getElementById('love-message-container');
+    const mobileLoveMessage = document.getElementById('mobile-love-message');
     const canvas = document.getElementById('text-canvas');
     const ctx = canvas.getContext('2d');
     const photoContainer = document.getElementById('photo-container');
@@ -15,30 +16,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const startDate = new Date('2024-01-21T00:00:00');
     let particles = [];
     let animationFrameId;
+    const isMobile = window.innerWidth <= 768;
 
-    // --- CANVAS RESIZE LÓGICA ---
+    // --- CANVAS RESIZE LÓGICA (Desktop) ---
     function resizeCanvas() {
         const scale = window.devicePixelRatio;
         const newWidth = Math.min(window.innerWidth * 0.9, 800);
         const newHeight = Math.min(window.innerHeight * 0.8, 400);
-
         canvas.style.width = `${newWidth}px`;
         canvas.style.height = `${newHeight}px`;
-
         canvas.width = newWidth * scale;
         canvas.height = newHeight * scale;
-        
         ctx.scale(scale, scale);
     }
 
     window.addEventListener('resize', () => {
-        if (!loveMessageContainer.classList.contains('hidden')) {
+        if (!isMobile && !loveMessageContainer.classList.contains('hidden')) {
             cancelAnimationFrame(animationFrameId);
             initTextAnimation();
         }
     });
 
-    // --- PARTICLE CLASS --- //
+    // --- PARTICLE CLASS (Desktop) --- //
     class Particle {
         constructor(x, y) {
             const scale = window.devicePixelRatio;
@@ -51,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const heartColors = ['#d81b60', '#f06292', '#ff4081', '#e91e63', '#c2185b'];
             this.color = heartColors[Math.floor(Math.random() * heartColors.length)];
         }
-
         update() {
             const dx = this.targetX - this.x;
             const dy = this.targetY - this.y;
@@ -64,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.y += dy / (15 / this.speed);
             }
         }
-
         draw() {
             ctx.fillStyle = this.color;
             ctx.font = `${this.size * 2.5}px Arial`;
@@ -72,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.textBaseline = 'middle';
             ctx.fillText('♥', this.x, this.y);
         }
-        
         disperse() {
             const scale = window.devicePixelRatio;
             const angle = Math.random() * Math.PI * 2;
@@ -82,27 +78,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- ANIMAÇÃO DO TEXTO --- //
+    // --- ANIMAÇÃO DO TEXTO (Desktop) --- //
     function initTextAnimation() {
         resizeCanvas();
         const scale = window.devicePixelRatio;
         const scaledWidth = canvas.width / scale;
         const scaledHeight = canvas.height / scale;
-
         ctx.fillStyle = 'white';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-
         let fontSize = scaledWidth / 4.5;
         ctx.font = `bold ${fontSize}px 'Dancing Script', cursive`;
-        
         while (ctx.measureText('Eu te amo').width > scaledWidth * 0.9) {
             fontSize--;
             ctx.font = `bold ${fontSize}px 'Dancing Script', cursive`;
         }
-
         ctx.fillText('Eu te amo', scaledWidth / 2, scaledHeight / 2);
-
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         particles = [];
         const density = 5 * scale;
@@ -137,58 +128,12 @@ document.addEventListener('DOMContentLoaded', () => {
         timeTogetherEl.innerHTML = `Juntos há: ${days}d ${hours}h ${minutes}m ${seconds}s`;
     }
 
-    envelopeContainer.addEventListener('click', () => {
-        // Tenta adicionar o listener de movimento (funcionará como easter egg se o dispositivo permitir)
-        if (window.DeviceMotionEvent) {
-            if (typeof DeviceMotionEvent.requestPermission === 'function') {
-                DeviceMotionEvent.requestPermission()
-                    .then(permissionState => {
-                        if (permissionState === 'granted') {
-                            window.addEventListener('devicemotion', handleMotion);
-                        }
-                    }).catch(console.error);
-            } else {
-                window.addEventListener('devicemotion', handleMotion);
-            }
-        }
-
-        // 1. Abre o envelope
-        envelopeContainer.classList.add('open');
-
-        // 2. Envelope desaparece
-        setTimeout(() => {
-            envelopeContainer.style.transition = 'opacity 1s ease-out';
-            envelopeContainer.style.opacity = '0';
-        }, 3000);
-
-        // 3. Inicia a animação de partículas
-        setTimeout(() => {
-            envelopeContainer.classList.add('hidden');
-            loveMessageContainer.classList.remove('hidden');
-            loveMessageContainer.style.opacity = '1';
-            initTextAnimation();
-        }, 4000);
-
-        // 4. Partículas se dispersam
-        setTimeout(() => {
-            particles.forEach(p => p.disperse());
-        }, 10000);
-
-        // 5. Animação de partículas desaparece
-        setTimeout(() => {
-            loveMessageContainer.style.opacity = '0';
-        }, 11000);
-
-        // 6. A galeria de fotos aparece
-        setTimeout(() => {
-            cancelAnimationFrame(animationFrameId);
-            loveMessageContainer.classList.add('hidden');
-            photoContainer.classList.remove('hidden');
-            photoContainer.style.opacity = '1';
-            timeTogetherContainer.classList.remove('hidden');
-            cuteGif.style.opacity = '1';
-            
-            // Popula a grade de fotos
+    function showPhotoGallery() {
+        photoContainer.classList.remove('hidden');
+        photoContainer.style.opacity = '1';
+        timeTogetherContainer.classList.remove('hidden');
+        cuteGif.style.opacity = '1';
+        if (photoGrid.children.length === 0) {
             for (let i = 1; i <= 12; i++) {
                 const photoDiv = document.createElement('div');
                 photoDiv.classList.add('photo');
@@ -198,16 +143,68 @@ document.addEventListener('DOMContentLoaded', () => {
                 photoDiv.appendChild(img);
                 photoGrid.appendChild(photoDiv);
             }
+        }
+        heartTriggerBtn.classList.add('visible');
+        heartTriggerBtn.addEventListener('click', triggerHeartExplosion);
+        updateTimeTogether();
+        setInterval(updateTimeTogether, 1000);
+    }
 
-            // Mostra o botão de coração e adiciona evento
-            heartTriggerBtn.classList.add('visible');
-            heartTriggerBtn.addEventListener('click', triggerHeartExplosion);
+    envelopeContainer.addEventListener('click', () => {
+        if (window.DeviceMotionEvent) {
+            if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                DeviceMotionEvent.requestPermission().then(permissionState => {
+                    if (permissionState === 'granted') {
+                        window.addEventListener('devicemotion', handleMotion);
+                    }
+                }).catch(console.error);
+            } else {
+                window.addEventListener('devicemotion', handleMotion);
+            }
+        }
 
-            // Inicia o contador de tempo
-            updateTimeTogether();
-            setInterval(updateTimeTogether, 1000);
-        }, 12000);
-    }, { once: true }); // Garante que o evento de clique no envelope só aconteça uma vez
+        envelopeContainer.classList.add('open');
+
+        setTimeout(() => {
+            envelopeContainer.style.transition = 'opacity 1s ease-out';
+            envelopeContainer.style.opacity = '0';
+        }, 3000);
+
+        setTimeout(() => {
+            envelopeContainer.classList.add('hidden');
+            loveMessageContainer.classList.remove('hidden');
+            loveMessageContainer.style.opacity = '1';
+            if (isMobile) {
+                canvas.style.display = 'none';
+                mobileLoveMessage.classList.add('visible');
+            } else {
+                mobileLoveMessage.style.display = 'none';
+                initTextAnimation();
+            }
+        }, 4000);
+
+        if (isMobile) {
+            setTimeout(() => {
+                loveMessageContainer.style.opacity = '0';
+            }, 8000);
+            setTimeout(() => {
+                loveMessageContainer.classList.add('hidden');
+                showPhotoGallery();
+            }, 9000);
+        } else { // Desktop
+            setTimeout(() => {
+                particles.forEach(p => p.disperse());
+            }, 10000);
+            setTimeout(() => {
+                loveMessageContainer.style.opacity = '0';
+            }, 11000);
+            setTimeout(() => {
+                cancelAnimationFrame(animationFrameId);
+                loveMessageContainer.classList.add('hidden');
+                showPhotoGallery();
+            }, 12000);
+        }
+    }, { once: true });
 
     // --- FUNCIONALIDADE DE CORAÇÕES (SHAKE E BOTÃO) ---
     let lastShakeTime = 0;
@@ -215,14 +212,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleMotion(event) {
         if (photoContainer.classList.contains('hidden')) return;
-
         const currentTime = new Date().getTime();
         if ((currentTime - lastShakeTime) > 500) {
             const acceleration = event.accelerationIncludingGravity;
             if (!acceleration || acceleration.x === null) return;
-
             const magnitude = Math.sqrt(acceleration.x * acceleration.x + acceleration.y * acceleration.y + acceleration.z * acceleration.z);
-
             if (magnitude > shakeThreshold) {
                 lastShakeTime = currentTime;
                 triggerHeartExplosion();
@@ -242,13 +236,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const heartEmojis = ['❤️', '💖', '💕', '💗', '😍'];
         heart.innerText = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
         heart.classList.add('bouncing-heart');
-
         heart.style.left = `${Math.random() * 95}vw`;
         heart.style.animationDuration = `${Math.random() * 2 + 3}s`;
         heart.style.fontSize = `${Math.random() * 1.5 + 1.5}rem`;
-
         document.body.appendChild(heart);
-
         heart.addEventListener('animationend', () => {
             heart.remove();
         });
