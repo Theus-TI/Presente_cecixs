@@ -145,17 +145,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     envelopeContainer.addEventListener('click', () => {
+        const debugInfo = document.getElementById('debug-info');
         // Pede permissão para eventos de movimento em dispositivos iOS 13+
         if (typeof DeviceMotionEvent.requestPermission === 'function') {
+            debugInfo.innerHTML = 'Requesting permission...';
+            debugInfo.style.display = 'block';
             DeviceMotionEvent.requestPermission()
                 .then(permissionState => {
                     if (permissionState === 'granted') {
+                        debugInfo.innerHTML = 'Permission granted! Listening...';
                         window.addEventListener('devicemotion', handleMotion);
+                    } else {
+                        debugInfo.innerHTML = 'Permission denied.';
                     }
                 })
-                .catch(console.error);
+                .catch(error => {
+                    debugInfo.innerHTML = `Error: ${error.message}`;
+                    console.error(error);
+                });
         } else {
             // Lida com dispositivos não-iOS 13+ ou navegadores que não exigem permissão
+            debugInfo.innerHTML = 'Listening for motion...';
+            debugInfo.style.display = 'block';
             window.addEventListener('devicemotion', handleMotion);
         }
 
@@ -215,23 +226,34 @@ let lastShakeTime = 0;
 const shakeThreshold = 15; // Sensibilidade aumentada para facilitar a ativação
 
 function handleMotion(event) {
+    const debugInfo = document.getElementById('debug-info');
     // Só executa a lógica depois que a galeria de fotos estiver visível
     if (document.querySelector('.photo-container').classList.contains('hidden')) {
+        debugInfo.innerHTML = 'Waiting for gallery...';
         return;
     }
 
     const currentTime = new Date().getTime();
     // Evita que a função seja chamada muitas vezes seguidas
-    if ((currentTime - lastShakeTime) > 500) {
+    if ((currentTime - lastShakeTime) > 100) { // Delay reduzido para feedback mais rápido
         const acceleration = event.accelerationIncludingGravity;
         if (!acceleration || acceleration.x === null) {
-            return; // Se não houver dados de aceleração, não faz nada
+            debugInfo.innerHTML = 'No acceleration data.';
+            return; 
         }
         const x = acceleration.x;
         const y = acceleration.y;
         const z = acceleration.z;
 
         const magnitude = Math.sqrt(x * x + y * y + z * z);
+
+        debugInfo.innerHTML = `
+            X: ${x.toFixed(2)}<br>
+            Y: ${y.toFixed(2)}<br>
+            Z: ${z.toFixed(2)}<br>
+            Magnitude: <strong>${magnitude.toFixed(2)}</strong><br>
+            Threshold: ${shakeThreshold}
+        `;
 
         if (magnitude > shakeThreshold) {
             lastShakeTime = currentTime;

@@ -286,6 +286,21 @@ button:hover {
     }
 }
 
+/* --- Debug Info Panel --- */
+#debug-info {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px;
+    z-index: 20000;
+    display: none; /* Começa escondido */
+}
+
 /* --- Responsividade --- */
 @media (max-width: 768px) {
     .envelope-container {
